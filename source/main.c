@@ -8,12 +8,6 @@
 #include <fcntl.h>
 #include <sys/wait.h>
 
-char *get_word(char *end);
-char **get_list();
-int is_end(char **list);
-void run(char **list);
-void clear(char **list);
-
 char *get_word(char *end) {
 	if ((*end) == '\n') {
 		return NULL;
