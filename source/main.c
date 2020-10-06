@@ -7,17 +7,15 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <sys/wait.h>
+#include <err.h>
 
 char *get_word(char *end) {
-	if ((*end) == '\n') {
-        return NULL;
-    }
     char ch;
-    char *word = (char*)malloc(sizeof(char));
+    char *word = (char *)malloc(sizeof(char));
     int i = 0;
     ch = getchar();
     while ((ch!= ' ') && (ch != '\t') && (ch != '\n')) {
-        word = realloc(word, i + 2);
+        word = realloc(word, i + 1);
         if (!word) {
             printf("Word allocation error");
             exit(1);
@@ -37,12 +35,8 @@ char **get_list() {
     char *word;
     char end = 0;
     word = get_word(&end);
-    while (word) {
+    while (end != '\n') {
         list = realloc(list, (i + 2) * sizeof(char*));
-        if (!list) {
-            printf("List allocation error");
-            exit(1);
-        }
         list[i] = word;
         i++;
         word = get_word(&end);
@@ -117,6 +111,7 @@ int main(int argc, char** argv) {
         clear(cmd);
         cmd = get_list();
     }*/
+    redirect(cmd);
     if (fork() > 0) {
          wait(NULL);
     } else {
