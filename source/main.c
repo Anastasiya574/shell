@@ -8,6 +8,8 @@
 #include <fcntl.h>
 #include <sys/wait.h>
 
+void do_conv_for_two(char **list, char **A, char **B);
+
 char *get_word(char *end) {
 	if ((*end) == '\n') {
 		return NULL;
@@ -118,13 +120,66 @@ int redirect(char **cmd){
     return 0;
 }
 
+int if_conv_for_two(char **list) {
+    int i = 0;
+    int check = 0;
+    //int *iconv = NULL;
+    while (list[i] != NULL) {
+        if (strcmp(list[i], "|") == 0) {
+            check = i;
+        }
+        i++;
+    }
+    if (check != 0) {
+        int i, j;
+        char **A = (char**)malloc((check + 1) * sizeof(char*));
+        for (i = 0; i < check; i++) {
+            A[i] = list[i];
+        }
+        A[i] = NULL;
+        i = check + 1;
+        int k = i;
+        while (list[i] != NULL) i++;
+        char **B = (char**)malloc((i - check) * sizeof(char*));
+        for (j = 0; k < i; j++, k++) {
+            B[j] = list[k];
+        }
+        B[j] = NULL;
+        do_conv_for_two(list, A, B);
+    }
+    return check;
+}
 
+void do_conv_for_two(char **list, char **A, char **B) {
+    int fd[2];
+    pipe(fd);
+    if (fork() == 0) {
+        dup2(fd[1], 1);
+        close(fd[0]);
+        close(fd[1]);
+        execvp(A[0], A);
+    }
+    if (fork() == 0) {
+        dup2(fd[0], 0);
+        close(fd[0]);
+        close(fd[1]);
+        execvp(B[0], B);
+    }
+    close(fd[0]);
+    close(fd[1]);
+    wait(NULL);
+    wait(NULL);
+    free(A);
+    free(B);
+    return;
+}
 
 int main(int argc, char** argv) {
     char **cmd = NULL;
 		cmd = get_list();
 		while(is_end(cmd) == 0) {
 			redirect(cmd);
+            if_conv_for_two(cmd);
 			clear(cmd);
 			cmd = get_list();
 		}
