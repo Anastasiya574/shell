@@ -1,26 +1,17 @@
 # shell
 
-![](//Bash.jpg)
+![image](//Bash.jpg)
 
 This is a custom interpreter (bash), which was written in the C language.
 
-There are 3 versions (will be): 
-  * ### in version 1: 
-  1. We divide string into lexemes (words);
-  2. Then we do standart program launch;
-  3. And redirect input (">") and output ("<");
-  
-  * ### in version 2: (we add to version 1)
-  4. Conveyor for 2 elements;
-  5. Conveyor for n elements;
-
+[An interpreter is a computer program that is used to directly execute program instructions written using one of the many high-level programming languages. The interpreter transforms the high-level program into an intermediate language that it then executes, or it could parse the high-level source code and then performs the commands directly, which is done line by line or statement by statement.](https://www.techopedia.com/definition/7793/interpreter)
 
  ## Compilation
   `make`
 
  ## How to run program
-  `./main`
+  `./bin/main`
 
  ## Links
-  * [picture](https://andreyex.ru/wp-content/uploads/2018/12/Kak-sozdat-psevdonimy-Bash.jpg)
-  * [main link and materials](mymath.info)
+  * [picture from](https://andreyex.ru/wp-content/uploads/2018/12/Kak-sozdat-psevdonimy-Bash.jpg)
+  * [main link and materials](http://mymath.info)
