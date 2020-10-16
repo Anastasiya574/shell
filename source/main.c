@@ -250,31 +250,7 @@ void conveyor_for_two(char **list, char **A, char **B, int fd_in, int fd_out) {
 	wait(NULL);
 	return;
 }
-/*
-void handler(int signo) {
-	pid_t pid;
-	if (pid != 1) {
-		kill(pid, SIGINT);
-	}
-}
 
-
-int main(void) {
-	char **cmd;
-        //signal(SIGINT, handler);
-	while(1) {
-		cmd = get_list();
-		if (is_end(cmd) == 1) {
-			clear(cmd);
-			break;
-		}
-		check_and_run(cmd);
-		clear(cmd);
-	}
-	return 0;
-}
-
-*/
 int main(int argc, char** argv) {
     char **cmd = NULL;
     cmd = get_list();
