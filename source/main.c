@@ -15,9 +15,10 @@ int is_end(char **list);
 void check_and_run(char **list);
 void conveyor_and(char **list, int fd_in, int fd_out);
 void run(char **list, int fd_in, int fd_out, int delimiter_position, int and_position, int bg_mode);
-void exec_classic(char ** list, int fd_in, int fd_out, int bg_mode);
+void exec_classic(char ** list, int fd_in, int fd_out);
 void make_3star(char **list, char ***A, char ***B, int delimiter_position);
 void conveyor_for_two(char **list, char **A, char **B, int fd_in, int fd_out);
+void bg_exec(char ** list, int fd_in, int fd_out, int bg_mode);
 void handler(int signo);
 
 int main(int argc, char** argv) {
@@ -131,6 +132,7 @@ void check_and_run(char **list) {
     list = realloc(list, (i + 1) * sizeof(char*));
     list[i] = NULL;
     run(list, fd_in, fd_out, delimiter_position, and_position, bg_mode);
+    free(list);
     return;
 }
 
@@ -179,8 +181,10 @@ void run(char **list, int fd_in, int fd_out, int delimiter_position,
         conveyor_for_two(list, A, B, fd_in, fd_out);
     } else if (and_position != 0) {
         conveyor_and(list, fd_in, fd_out);
+    } else if (bg_mode != 0) {
+        bg_exec(list, fd_in, fd_out, bg_mode);
     } else {
-        exec_classic(list, fd_in, fd_out, bg_mode);
+        exec_classic(list, fd_in, fd_out);
     }
     if (fd_out != 1) {
         close(fd_out);
@@ -191,11 +195,37 @@ void run(char **list, int fd_in, int fd_out, int delimiter_position,
     return;
 }
 
-void exec_classic(char ** list, int fd_in, int fd_out, int bg_mode) {
-    if (fork() > 0) {
-        if (bg_mode == 0) {
-            wait(NULL);
+void bg_exec(char ** list, int fd_in, int fd_out, int bg_mode) {
+    int *pid_in_phone = NULL;
+    int pid_counter = 0;
+    pid_t pid;
+    pid = fork();
+    if (pid == 0) {
+        if (fd_out != 1) {
+            dup2(fd_out, 1);
         }
+        if (fd_in != 0) {
+            dup2(fd_in, 0);
+        }
+        if (execvp(list[0], list) < 0) {
+            perror("exec failed");
+            return;
+        }
+    }
+    if (pid > 0) {
+        pid_counter++;
+        pid_in_phone = realloc(pid_in_phone, bg_mode * sizeof(int));
+        pid_in_phone[pid_counter - 1] = pid;
+        for (int i = 0; i < pid_counter; i++) {
+        waitpid(pid_in_phone[i], NULL, 0);
+        }
+    }
+    return;
+}
+
+void exec_classic(char ** list, int fd_in, int fd_out) {
+    if (fork() > 0) {
+            wait(NULL);
     } else {
         if (fd_out != 1) {
             dup2(fd_out, 1);
@@ -257,4 +287,3 @@ void conveyor_for_two(char **list, char **A, char **B, int fd_in, int fd_out) {
     wait(NULL);
     return;
 }
-
