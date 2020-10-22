@@ -1,6 +1,6 @@
 all:
 	mkdir bin -p
-	gcc source/main.c -o bin/main -Wall -Werror -lm -fsanitize=address,leak    
+	gcc source/main.c -o bin/main -Wall -Werror -lm -fsanitize=leak    
 
 clean:
 	rm bin/main
